@@ -39,6 +39,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.4")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4")
-    implementation("com.google.ai.edge.litertlm:litertlm-android:0.18.0")
+    implementation("com.github.ThalzeronLabs:llama-kotlin:v0.3.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
     debugImplementation("androidx.compose.ui:ui-tooling")
 }
