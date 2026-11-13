@@ -6,21 +6,19 @@ plugins {
 
 android {
     namespace = "com.example.gptclone"
-    compileSdk = 37
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.gptclone"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 10
+        versionName = "2.8"
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    
-
     buildFeatures { compose = true }
 }
 
@@ -39,7 +37,12 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.9.4")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.4")
-    implementation("com.github.ThalzeronLabs:llama-kotlin:v0.3.0")
+    
+    // تثبيت المكتبة على الإصدار المستقر
+    implementation("com.github.ThalzeronLabs:llama-kotlin:v0.2.2")
+    
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2")
+    
     debugImplementation("androidx.compose.ui:ui-tooling")
 }
