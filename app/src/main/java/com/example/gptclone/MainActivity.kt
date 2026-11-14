@@ -18,9 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewModelScope
-import com.codeshipping.llama.LlamaModel
-import com.codeshipping.llama.LlamaSession
-import com.codeshipping.llama.SessionParams
+import org.codeshipping.llamakotlin.LlamaModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -48,7 +46,6 @@ class ChatViewModel : ViewModel() {
         private set
 
     private var model: LlamaModel? = null
-    private var session: LlamaSession? = null
     private val client = OkHttpClient()
 
     private val systemPrompt = """
@@ -71,7 +68,7 @@ class ChatViewModel : ViewModel() {
                     response.body?.byteStream()?.use { input ->
                         FileOutputStream(file).use { output -> input.copyTo(output) }
                     }
-                    loadModel(file)
+                    loadModel(file.absolutePath)
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) { status = "خطأ: ${e.message}" }
@@ -87,26 +84,23 @@ class ChatViewModel : ViewModel() {
                 context.contentResolver.openInputStream(uri)?.use { input ->
                     FileOutputStream(file).use { output -> input.copyTo(output) }
                 }
-                loadModel(file)
+                loadModel(file.absolutePath)
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) { status = "خطأ: ${e.message}" }
             }
         }
     }
 
-    private suspend fun loadModel(file: File) {
+    private suspend fun loadModel(path: String) {
         withContext(Dispatchers.IO) {
             try {
                 status = "جاري تحميل النموذج..."
-                model = LlamaModel.load(file)
-                
-                val params = SessionParams(
-                    contextSize = 4096,
-                    temperature = 0.8f,
-                    topK = 40,
+                model = LlamaModel.load(path) {
+                    contextSize = 4096
+                    temperature = 0.8f
+                    topK = 40
                     topP = 0.95f
-                )
-                session = model?.newSession(params)
+                }
                 withContext(Dispatchers.Main) { status = "Dolfino جاهز (بدون قيود)." }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) { status = "فشل التحميل: ${e.message}" }
@@ -118,8 +112,8 @@ class ChatViewModel : ViewModel() {
         if (text.isBlank() || isGenerating) return
         lines = lines + ChatLine(true, text.trim())
         
-        val currentSession = session
-        if (currentSession == null) {
+        val currentModel = model
+        if (currentModel == null) {
             lines = lines + ChatLine(false, "الرجاء تحميل النموذج أولاً.")
             return
         }
@@ -129,10 +123,8 @@ class ChatViewModel : ViewModel() {
             try {
                 val prompt = "<|im_start|>system\n$systemPrompt<|im_end|>\n<|im_start|>user\n$text<|im_end|>\n<|im_start|>assistant\n"
                 
-                val flow = currentSession.generate(prompt)
                 val fullResponse = StringBuilder()
-                
-                flow.collect { piece ->
+                currentModel.generateStream(prompt).collect { piece ->
                     fullResponse.append(piece)
                     withContext(Dispatchers.Main) {
                         if (lines.lastOrNull()?.fromUser == false) {
