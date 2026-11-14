@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewModelScope
-import com.codeshipping.llama.ChatMessage
 import com.codeshipping.llama.LlamaModel
 import com.codeshipping.llama.LlamaSession
 import com.codeshipping.llama.SessionParams
@@ -128,12 +127,9 @@ class ChatViewModel : ViewModel() {
         isGenerating = true
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val messages = listOf(
-                    ChatMessage.system(systemPrompt),
-                    ChatMessage.user(text)
-                )
+                val prompt = "<|im_start|>system\n$systemPrompt<|im_end|>\n<|im_start|>user\n$text<|im_end|>\n<|im_start|>assistant\n"
                 
-                val flow = currentSession.chat(messages)
+                val flow = currentSession.generate(prompt)
                 val fullResponse = StringBuilder()
                 
                 flow.collect { piece ->
