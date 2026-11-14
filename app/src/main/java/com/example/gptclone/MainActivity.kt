@@ -18,10 +18,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewModelScope
-import com.thalzeronlabs.llama.ChatMessage
-import com.thalzeronlabs.llama.LlamaModel
-import com.thalzeronlabs.llama.LlamaSession
-import com.thalzeronlabs.llama.SessionParams
+import com.codeshipping.llama.ChatMessage
+import com.codeshipping.llama.LlamaModel
+import com.codeshipping.llama.LlamaSession
+import com.codeshipping.llama.SessionParams
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
